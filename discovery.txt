@@ -1,0 +1,64 @@
+Initial Questions on Requirements
+
+- What does incident data look like? see JSON samples
+- Display location and data (what data?) geohash, latitude/longitude, address, intersection, response zone
+- Enrich how? add weather (temperature, rain, snow, etc.) see available relevant data in Meteostat
+- Stakeholders: fire departments, community, victims, local governments
+
+
+Discovery
+
+- Inspect sample JSON in data folder. Interesting groups:
+  - Address, common place name, geohash, longitude/latitude, response_zone
+  - Aparatus are vehicles customized for firefighting: fire engine (truck), aerial, water tender, hazmat, heavy rescue
+    unit_type, unit_status (sequence of events), station,  
+  - Description: main incident data
+  - Fire department
+- Inspect Meteostat weather data, find common id/key to join incident with weather data
+  - Hourly data by lat/lon, start/end date -> hourly data with:
+  - Temperature, rain precipitation, snow precipitation, wind speed
+
+Stack
+
+- React
+- google-map-react component https://github.com/google-map-react/google-map-react
+- Google Maps
+
+
+Data APIs:
+- Weather data from https://dev.meteostat.net/
+- Maps from Google Maps
+
+
+Design
+
+- Join incident and weather data with getWeather function
+- Inputs to getWeather: latitude, longitude, startTime, endTime, eventId)
+- Output: 
+  { 
+    eventId: 123,
+    temperatureRange: 80 F - 85 F,
+    rain: yes/no,
+    snow: yes/no, 
+    maxWindSpeed: 8,
+  } 
+- Determine zoom level for map component, derived lat/long min/max?
+- Round down startTime to startDate, round up endTime to endDate
+- Components:
+  <App> 
+    Holds state
+    Calculates lat/long, zoom level for map
+    Creates incidents array of: { eventId, name, startTime, endTime, weather (from getWeather(eventId), location { name } }
+    Iterates and Passes individual incident prop to <Incident> components 
+   
+    <GoogleMapReact>
+    <Incident>
+    <Incident> renders as HTML:
+      Name
+      Temperature: temperatureRange
+      Rain: yes/no
+      Snow: yes/no
+      Wind Speed (max): 8
+      Started at: yyyy-mm-dd hh:mm:ss
+
+- Store API keys outside of Git repo, e.g. ~/api-keys/meteostat
