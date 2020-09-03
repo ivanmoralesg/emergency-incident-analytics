@@ -18,6 +18,7 @@ Discovery
   - Hourly data by lat/lon, start/end date -> hourly data with:
   - Temperature, rain precipitation, snow precipitation, wind speed
 
+
 Stack
 
 - React
@@ -45,12 +46,12 @@ Design
 - Determine zoom level for map component, derived lat/long min/max?
 - Round down startTime to startDate, round up endTime to endDate
 - Components:
-  <App> 
-    Holds state
-    Calculates lat/long, zoom level for map
-    Creates incidents array of: { eventId, name, startTime, endTime, weather (from getWeather(eventId), location { name } }
-    Iterates and Passes individual incident prop to <Incident> components 
-   
+  <App>   
+    <IncidentMap>
+      Holds state
+      Calculates lat/long, zoom level for map
+      Creates incidents array of: { eventId, name, startTime, endTime, weather (from getWeather(eventId), location { name } }
+      Iterates and Passes individual incident prop to <Incident> components 
     <GoogleMapReact>
     <Incident>
     <Incident> renders as HTML:
