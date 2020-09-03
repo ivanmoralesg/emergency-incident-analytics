@@ -25,5 +25,5 @@
   - About 1 hour understanding the requirements and available data
   - 1+ hours sending test requests to Meteostat API
   - 1+ hours getting the GoogleMapReact component to work
-  - The rest was on iterative coding: fetching data from APIs, combining incident and weather data, building the `<IncidentMap>` and `<Marker> components
+  - The rest was on iterative coding: fetching data from APIs, combining incident and weather data, building the `<IncidentMap>` and `<Marker>` components
 
