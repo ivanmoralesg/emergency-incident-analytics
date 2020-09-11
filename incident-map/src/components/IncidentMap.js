@@ -1,26 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import GoogleMapReact from 'google-map-react';
-import Marker from './Marker';
+
+const Leaflet = window.L;
 
 const IncidentMap = () => {
 
     const DEFAULT_CENTER = [37.541885, -77.440624] // Richmond, VA
+    const DEFAULT_ZOOM = 11;
+
+    const LEAFLET_ATTRIBUTION = 'Map data &copy; ' +
+        '<a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+
+    const MAPBOX_ACCESS_TOKEN = '';
 
     const WEATHER_API_AUTH_HEADERS = {
-        headers: { 'x-api-key': '<YOUR_METEOSTAT_KEY>' }
+        headers: { 'x-api-key': '' }
     };
 
+    const [leafletMap, setMap] = useState('');
     const [incidents, setIncidents] = useState([]);
 
     async function fetchWeatherData(url) {
 
         const baseResponse = await fetch(url);
         const baseData = await baseResponse.json();
-         
+        
         const [eventId, latitude, longitude, startTime, city] = [
             baseData.description.event_id,
-            baseData.address.longitude,
             baseData.address.latitude,
+            baseData.address.longitude,
             baseData.description.event_opened,
             baseData.address.city,
             baseData.address.state
@@ -65,31 +74,47 @@ const IncidentMap = () => {
     } 
 
     useEffect(() => {
-    
+
         const incidentFiles = [ 'F01705150050.json', 'F01705150090.json' ];
 
         incidentFiles.forEach(f => {
             fetchWeatherData(`/data/${f}`)
-                .then(data => {
-                    // console.log(data);
-                });
+                .then(data => { });
         });
 
-    }, []);
+
+    }, [0]);
+
+    useEffect(() => {
+        
+        if (leafletMap) {
+            Leaflet.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                attribution: LEAFLET_ATTRIBUTION,
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: MAPBOX_ACCESS_TOKEN
+            }).addTo(leafletMap);
+        } else {
+            setMap(Leaflet.map('map').setView(DEFAULT_CENTER, DEFAULT_ZOOM));
+        }    
+
+    }, [leafletMap]);
 
     return (
-        <GoogleMapReact
-            // bootstrapURLKeys={{ key: /* YOUR_GA_MAP_KEY */ }},
-            defaultZoom={10}
-            defaultCenter={DEFAULT_CENTER}>
+        <div id="map" style={{ height: 800 }}>
             {
                 incidents.map(i => {
-                    return (
-                        <Marker key={ i.eventId } lat={i.latitude} lng={i.longitude} incident={ i } />
-                    )
+                    const marker = Leaflet.marker([i.latitude, i.longitude]).addTo(leafletMap);
+                    const popupText = `Temperature: ${i.weather.temperature}&deg;<br/>
+                        Rain: ${i.weather.rain}. Snow: ${i.weather.snow}<br/>
+                        Wind Speed (max): ${i.weather.windSpeed} km/h<br/>
+                        Started: ${i.startTime}`;
+                    marker.bindPopup(popupText);
                 })
             }
-        </GoogleMapReact>
+        </div>
     )
 
 }

@@ -4,7 +4,7 @@ import IncidentMap from './components/IncidentMap'
 const App = () => {
 
   return (
-    <div className="App" style={{ height: '100vh', width: '100%' }}>
+    <div className="App">
       <IncidentMap />
     </div>
   );
