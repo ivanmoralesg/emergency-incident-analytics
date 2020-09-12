@@ -28,6 +28,9 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class WeatherEnrichService {
 
+    public static final String JSON_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";
+    public static final String METEOSTAT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${meteostat.api.key}")
@@ -43,7 +46,7 @@ public class WeatherEnrichService {
 
     @GetMapping("/weather")
     public Map<String, Object> weatherInfo(@RequestParam double latitude, @RequestParam double longitude,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssX") Date startTime) throws ParseException {
+            @RequestParam @DateTimeFormat(pattern = JSON_DATE_FORMAT) Date startTime) throws ParseException {
 
         Map<String, Object> requestParams = new HashMap<>();
         requestParams.put("lat", latitude);
@@ -51,7 +54,7 @@ public class WeatherEnrichService {
         requestParams.put("startDate", String.format("%tF", startTime));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(singletonList(MediaType.ALL));
+        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.set("x-api-key", meteostatApiKey);
 
         ResponseEntity<Map> response = restTemplate.exchange(
@@ -60,7 +63,7 @@ public class WeatherEnrichService {
 
         int startHour = toHour(startTime);
         List<Map<String, Object>> hourlyData = (List) response.getBody().get("data");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(METEOSTAT_DATE_FORMAT);
 
         Optional<Map<String, Object>> weatherAtHour = hourlyData.stream().filter(w -> {
             String timeStr = (String) w.get("time");
@@ -81,7 +84,7 @@ public class WeatherEnrichService {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(dateTime);
-        
+
         return calendar.get(Calendar.HOUR_OF_DAY);
 
     }
