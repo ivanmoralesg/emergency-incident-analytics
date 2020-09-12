@@ -36,12 +36,12 @@
 - I spent closer to 6 hours in the first round trying the `google-react-map` React component
 - Spent another 8 hours in the second round switching to Leaflet and moving the enrich logic to a Spring backend
 - Most of the time was discovery, iterative coding, and testing:
-  - Testing the Meteostat API PostMan
+  - Testing the Meteostat API in PostMan
   - Learning about `google-react-map` and discarding it later
-  - Learning about Leaflet 
+  - Learning about the Leaflet JavaScript library
   - Incorporating Leaflet calls in React component
   - Writing a Spring backend to filter Meteostat data by incident location and time
-  - Dealing with asynchronous calls to Spring back end in JavaScript
+  - Dealing with JavaScript asynchronous calls to Spring backend
   - Combining JSON incident data with Meteostat weather data
   - Building the `<IncidentMap>` React component
   - Building the `WeatherEnrichService.java` web service
